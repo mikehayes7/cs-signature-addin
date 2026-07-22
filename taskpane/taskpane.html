@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Cellular Sales Email Signature</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  <link rel="stylesheet" href="taskpane.css" />
+</head>
+<body>
+  <div id="app-body">
+    <h1>Choose your signature</h1>
+
+    <label for="templateSelect">Template</label>
+    <select id="templateSelect">
+      <option value="salesRep">Sales Rep Signature</option>
+      <option value="recruiter">Recruiter Signature</option>
+      <option value="hqMarketOffice">HQ / Recruiter / Market Office Employee Signature</option>
+    </select>
+
+    <label for="nameInput">Full name</label>
+    <input type="text" id="nameInput" placeholder="Katherine Schaffer-Quinard" />
+
+    <label for="titleInput">Title</label>
+    <input type="text" id="titleInput" placeholder="Team Lead Product Management" />
+
+    <label for="workPhoneInput">Work phone</label>
+    <input type="text" id="workPhoneInput" placeholder="000-000-0000" />
+
+    <label for="cellPhoneInput">Cell phone</label>
+    <input type="text" id="cellPhoneInput" placeholder="000-000-0000" />
+
+    <button id="previewBtn">Preview</button>
+    <button id="insertBtn" class="primary">Insert Signature</button>
+
+    <h2>Preview</h2>
+    <iframe id="previewFrame" title="Signature preview"></iframe>
+
+    <div id="statusMsg"></div>
+  </div>
+
+  <script src="templates.js"></script>
+  <script src="taskpane.js"></script>
+</body>
+</html>
