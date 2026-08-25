@@ -98,10 +98,11 @@ function updatePreview() {
   const templateKey = document.getElementById("templateSelect").value;
   const html = renderSignature(templateKey, getFields());
   const frame = document.getElementById("previewFrame");
-  const doc = frame.contentDocument || frame.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
+  // Use srcdoc (an attribute on the iframe element itself) rather than
+  // reaching into frame.contentDocument -- contentDocument access can be
+  // blocked when this page is displayed inside a sandboxed iframe, like
+  // SharePoint's Embed web part. srcdoc works regardless.
+  frame.srcdoc = html;
   return html;
 }
 
