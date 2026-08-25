@@ -139,8 +139,18 @@
         <input type="text" id="cellPhoneInput" placeholder="000-000-0000" />
 
         <div class="actions">
-          <button id="copyBtn" class="primary" type="button">Copy signature</button>
           <button id="refreshBtn" type="button">Refresh preview</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Live preview</h2>
+        <iframe id="previewFrame" title="Signature preview"></iframe>
+
+        <div class="actions">
+          <button id="copyBtn" class="primary" type="button">Copy signature</button>
         </div>
 
         <div id="statusMsg"></div>
@@ -150,13 +160,6 @@
           into Outlook's signature editor (File &rarr; Options &rarr; Mail &rarr; Signatures) or your
           email client's signature settings.
         </p>
-      </div>
-    </div>
-
-    <div>
-      <div class="panel">
-        <h2>Live preview</h2>
-        <iframe id="previewFrame" title="Signature preview"></iframe>
       </div>
     </div>
   </div>

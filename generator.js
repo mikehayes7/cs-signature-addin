@@ -169,9 +169,19 @@ async function copySignature() {
   }
 }
 
+function resetForm() {
+  document.getElementById("templateSelect").value = "salesRep";
+  document.getElementById("nameInput").value = "";
+  document.getElementById("titleInput").value = "";
+  document.getElementById("workPhoneInput").value = "";
+  document.getElementById("cellPhoneInput").value = "";
+  showStatus("", false);
+  updatePreview();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("templateSelect").addEventListener("change", updatePreview);
-  document.getElementById("refreshBtn").addEventListener("click", updatePreview);
+  document.getElementById("refreshBtn").addEventListener("click", resetForm);
   document.getElementById("copyBtn").addEventListener("click", copySignature);
   ["nameInput", "titleInput", "workPhoneInput", "cellPhoneInput"].forEach((id) => {
     document.getElementById(id).addEventListener("input", updatePreview);
