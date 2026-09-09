@@ -103,10 +103,18 @@ function applyHardSetTitle(templateKey) {
   if (hardTitle) {
     titleInput.value = hardTitle;
     titleInput.disabled = true;
+    titleInput.dataset.autoset = "true";
     titleInput.title = "This template always uses a fixed title.";
   } else {
     titleInput.disabled = false;
     titleInput.title = "";
+    // Only clear if the current value was auto-filled by us (e.g. leftover
+    // "Sales Representative" from switching away from that template) --
+    // never wipe out something the user typed themselves.
+    if (titleInput.dataset.autoset === "true") {
+      titleInput.value = "";
+    }
+    titleInput.dataset.autoset = "false";
   }
 }
 
@@ -282,6 +290,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("templateSelect").addEventListener("change", updatePreview);
   document.getElementById("refreshBtn").addEventListener("click", resetForm);
   document.getElementById("copyBtn").addEventListener("click", copySignature);
+  document.getElementById("titleInput").addEventListener("input", () => {
+    document.getElementById("titleInput").dataset.autoset = "false";
+  });
   ["nameInput", "titleInput", "workPhoneInput", "cellPhoneInput"].forEach((id) => {
     document.getElementById(id).addEventListener("input", updatePreview);
   });
