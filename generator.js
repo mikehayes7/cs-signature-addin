@@ -2,13 +2,28 @@
 // Standalone Cellular Sales email signature builder.
 // No Office.js dependency -- works as a plain static page (e.g. on GitHub Pages).
 //
-// IMPORTANT: Replace ASSET_BASE below once logo/icon/banner images are hosted
-// (add them under an /assets folder in this repo, or point at another host).
-// SVG is NOT supported by most email clients' signature fields -- use PNG or JPG only.
+// CHANGE LOG (this pass):
+// 1. ASSET_BASE switched from a relative path to an absolute URL. Relative
+//    paths only resolve correctly while the images are viewed *on this page*.
+//    Once the signature HTML is copied into Outlook's signature editor, it no
+//    longer lives at this URL, so relative paths broke -> Outlook showed the
+//    logo/icon spots as grey placeholder boxes. Absolute URLs fix that.
+//    If GitHub Pages is not the final host, update ASSET_BASE to wherever
+//    IT ends up hosting the assets folder.
+// 2. Sales Rep template's title is now hard-set to "Sales Representative" --
+//    the title field is disabled and ignored for that template.
+// 3. copySignature() now cascades through multiple copy strategies so it
+//    degrades gracefully on mobile browsers that don't support rich
+//    clipboard writes: rich HTML -> legacy rich copy -> plain-text clipboard
+//    -> plain-text legacy copy -> manual "select this box" fallback.
 
-const ASSET_BASE = "assets";
+const ASSET_BASE = "https://mikehayes7.github.io/cs-signature-addin/assets";
 
 const BASE_STYLE = "font-family: Arial, sans-serif; font-size: 12px; color: #000000; line-height: 1.4;";
+
+const HARD_SET_TITLES = {
+  salesRep: "Sales Representative"
+};
 
 function baseSignature({ showCareersLink = false, showAwardBanner = false } = {}) {
   const websiteLine = showCareersLink ? "cellularsales.com/careers" : "cellularsales.com";
@@ -82,13 +97,28 @@ function getFields() {
   };
 }
 
+function applyHardSetTitle(templateKey) {
+  const titleInput = document.getElementById("titleInput");
+  const hardTitle = HARD_SET_TITLES[templateKey];
+  if (hardTitle) {
+    titleInput.value = hardTitle;
+    titleInput.disabled = true;
+    titleInput.title = "This template always uses a fixed title.";
+  } else {
+    titleInput.disabled = false;
+    titleInput.title = "";
+  }
+}
+
 function renderSignature(templateKey, fields) {
   const template = TEMPLATES[templateKey];
   if (!template) throw new Error("Unknown template: " + templateKey);
 
+  const title = HARD_SET_TITLES[templateKey] || fields.title || "";
+
   let html = template.html;
   html = html.replaceAll("{{name}}", escapeHtml(fields.name || ""));
-  html = html.replaceAll("{{title}}", escapeHtml(fields.title || ""));
+  html = html.replaceAll("{{title}}", escapeHtml(title));
   html = html.replaceAll("{{workPhone}}", escapeHtml(fields.workPhone || ""));
   html = html.replaceAll("{{cellPhone}}", escapeHtml(fields.cellPhone || ""));
   return html;
@@ -96,6 +126,7 @@ function renderSignature(templateKey, fields) {
 
 function updatePreview() {
   const templateKey = document.getElementById("templateSelect").value;
+  applyHardSetTitle(templateKey);
   const html = renderSignature(templateKey, getFields());
   const frame = document.getElementById("previewFrame");
   // Use srcdoc (an attribute on the iframe element itself) rather than
@@ -112,20 +143,68 @@ function showStatus(message, isError) {
   el.className = isError ? "error" : "";
 }
 
+function htmlToPlainText(html) {
+  const plain = document.createElement("div");
+  plain.innerHTML = html;
+  return plain.textContent.replace(/\n\s*\n+/g, "\n").trim();
+}
+
+// Legacy rich-copy: render the HTML into a real, in-viewport (but invisible)
+// contenteditable element, select it, and use execCommand("copy"). Some
+// mobile browsers refuse to copy content that's positioned off-screen, so
+// this keeps the holder within the visible viewport using opacity instead.
+function legacyCopyHtml(html) {
+  const holder = document.createElement("div");
+  holder.setAttribute("contenteditable", "true");
+  holder.style.position = "fixed";
+  holder.style.top = "0";
+  holder.style.left = "0";
+  holder.style.opacity = "0";
+  holder.style.pointerEvents = "none";
+  holder.style.zIndex = "-1";
+  holder.innerHTML = html;
+  document.body.appendChild(holder);
+
+  let ok = false;
+  try {
+    const range = document.createRange();
+    range.selectNodeContents(holder);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    ok = document.execCommand("copy");
+    selection.removeAllRanges();
+  } catch (err) {
+    ok = false;
+  } finally {
+    document.body.removeChild(holder);
+  }
+  return ok;
+}
+
+function showManualCopyFallback(html) {
+  const frame = document.getElementById("previewFrame");
+  frame.scrollIntoView({ behavior: "smooth", block: "center" });
+  showStatus(
+    "Couldn't copy automatically on this device. Tap and hold inside the preview above, choose \"Select All\", then \"Copy\".",
+    true
+  );
+}
+
 async function copySignature() {
   const fields = getFields();
-  if (!fields.name || !fields.title) {
+  const templateKey = document.getElementById("templateSelect").value;
+  const effectiveTitle = HARD_SET_TITLES[templateKey] || fields.title;
+
+  if (!fields.name || !effectiveTitle) {
     showStatus("Please fill in at least your name and title before copying.", true);
     return;
   }
 
-  const templateKey = document.getElementById("templateSelect").value;
   const html = renderSignature(templateKey, fields);
-  const plain = document.createElement("div");
-  plain.innerHTML = html;
-  const text = plain.textContent.replace(/\n\s*\n+/g, "\n").trim();
+  const text = htmlToPlainText(html);
 
-  // Preferred: rich clipboard write (keeps formatting when pasted into Outlook/Gmail).
+  // 1) Preferred: rich clipboard write (keeps formatting when pasted into Outlook/Gmail).
   if (navigator.clipboard && window.ClipboardItem) {
     try {
       const item = new ClipboardItem({
@@ -136,37 +215,57 @@ async function copySignature() {
       showStatus("Signature copied! Paste it into your email client's signature editor.", false);
       return;
     } catch (err) {
-      // Fall through to legacy copy method below.
+      // Fall through -- common on mobile Safari/Chrome, which either lack
+      // ClipboardItem support or block it outside a direct user gesture.
     }
   }
 
-  // Fallback: select a hidden rendered copy and use execCommand("copy").
+  // 2) Legacy rich copy via execCommand.
+  if (legacyCopyHtml(html)) {
+    showStatus("Signature copied! Paste it into your email client's signature editor.", false);
+    return;
+  }
+
+  // 3) Plain-text clipboard write -- widely supported, including most mobile browsers.
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showStatus(
+        "Formatting couldn't be copied on this device -- copied plain text instead. You'll need to add logos/formatting manually, or set this up from a desktop browser.",
+        true
+      );
+      return;
+    } catch (err) {
+      // Fall through to the final fallback.
+    }
+  }
+
+  // 4) Plain-text legacy copy.
   try {
-    const holder = document.createElement("div");
-    holder.setAttribute("contenteditable", "true");
-    holder.style.position = "fixed";
-    holder.style.left = "-9999px";
-    holder.innerHTML = html;
-    document.body.appendChild(holder);
-
-    const range = document.createRange();
-    range.selectNodeContents(holder);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.top = "0";
+    textarea.style.left = "0";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
     const ok = document.execCommand("copy");
-    selection.removeAllRanges();
-    document.body.removeChild(holder);
-
+    document.body.removeChild(textarea);
     if (ok) {
-      showStatus("Signature copied! Paste it into your email client's signature editor.", false);
-    } else {
-      showStatus("Copy failed -- select the preview above and copy manually (Ctrl/Cmd+C).", true);
+      showStatus(
+        "Formatting couldn't be copied on this device -- copied plain text instead. You'll need to add logos/formatting manually, or set this up from a desktop browser.",
+        true
+      );
+      return;
     }
   } catch (err) {
-    showStatus("Copy failed -- select the preview above and copy manually (Ctrl/Cmd+C).", true);
+    // Fall through to manual fallback.
   }
+
+  // 5) Nothing worked -- point the user at manual copy.
+  showManualCopyFallback(html);
 }
 
 function resetForm() {

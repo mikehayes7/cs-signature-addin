@@ -5,165 +5,162 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Cellular Sales Email Signature Generator</title>
 <style>
-  :root {
-    --cs-red: #c00000;
-    --border: #d7d5d3;
-    --text: #201f1e;
-    --muted: #605e5c;
-    --bg: #f5f4f3;
-  }
-  * { box-sizing: border-box; }
-  body {
-    font-family: Segoe UI, Arial, Helvetica, sans-serif;
-    margin: 0;
-    padding: 24px;
-    background: var(--bg);
-    color: var(--text);
-  }
-  .wrap {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 24px;
-  }
-  @media (max-width: 760px) {
-    .wrap { grid-template-columns: 1fr; }
-  }
-  h1 {
-    font-size: 20px;
-    margin: 0 0 4px 0;
-  }
-  .subtitle {
-    font-size: 13px;
-    color: var(--muted);
-    margin: 0 0 20px 0;
-  }
-  .panel {
-    background: #ffffff;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 18px;
-  }
-  .panel h2 {
-    font-size: 14px;
-    margin: 0 0 14px 0;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    margin-top: 12px;
-    margin-bottom: 4px;
-  }
-  select, input[type="text"] {
-    width: 100%;
-    padding: 8px 10px;
-    font-size: 13px;
-    border: 1px solid #8a8886;
-    border-radius: 4px;
-    font-family: inherit;
-  }
-  .actions {
-    margin-top: 18px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  button {
-    padding: 9px 16px;
-    font-size: 13px;
-    border: 1px solid var(--cs-red);
-    background: #ffffff;
-    color: var(--cs-red);
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  button.primary {
-    background: var(--cs-red);
-    color: #ffffff;
-  }
-  button:hover { opacity: 0.9; }
-  #statusMsg {
-    margin-top: 12px;
-    font-size: 12px;
-    min-height: 16px;
-    color: #107c10;
-  }
-  #statusMsg.error { color: #a4262c; }
-  #previewFrame {
-    width: 100%;
-    height: 420px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: #ffffff;
-  }
-  .hint {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 10px;
-    line-height: 1.4;
-  }
+:root {
+  --cs-red: #c00000;
+  --border: #d7d5d3;
+  --text: #201f1e;
+  --muted: #605e5c;
+  /* Was #f5f4f3 (near-white warm grey). Bumped to a visibly stone tone
+     per request to "change background box to stone color". If this reads
+     too dark/light, nudge the hex -- common stone steps: #f5f5f4 (lighter),
+     #e7e5e4 (this one), #d6d3d1 (darker). */
+  --bg: #e7e5e4;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: Segoe UI, Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--text);
+}
+.wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+}
+@media (max-width: 760px) {
+  .wrap { grid-template-columns: 1fr; }
+}
+h1 {
+  font-size: 20px;
+  margin: 0 0 4px 0;
+}
+.subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 20px 0;
+}
+.panel {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 18px;
+}
+.panel h2 {
+  font-size: 14px;
+  margin: 0 0 14px 0;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+select, input[type="text"] {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 1px solid #8a8886;
+  border-radius: 4px;
+  font-family: inherit;
+}
+input[type="text"]:disabled {
+  background: var(--bg);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.actions {
+  margin-top: 18px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+button {
+  padding: 9px 16px;
+  font-size: 13px;
+  border: 1px solid var(--cs-red);
+  background: #ffffff;
+  color: var(--cs-red);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+button.primary {
+  background: var(--cs-red);
+  color: #ffffff;
+}
+button:hover { opacity: 0.9; }
+#statusMsg {
+  margin-top: 12px;
+  font-size: 12px;
+  min-height: 16px;
+  color: #107c10;
+}
+#statusMsg.error { color: #a4262c; }
+#previewFrame {
+  width: 100%;
+  height: 420px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #ffffff;
+}
+.hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 10px;
+  line-height: 1.4;
+}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div>
-      <h1>Cellular Sales Signature Generator</h1>
-      <p class="subtitle">Fill in your details, preview the result, then copy it into your email client's signature settings.</p>
-
-      <div class="panel">
-        <h2>Your details</h2>
-
-        <label for="templateSelect">Template</label>
-        <select id="templateSelect">
-          <option value="salesRep">Sales Rep Signature</option>
-          <option value="recruiter">Recruiter Signature</option>
-          <option value="hqMarketOffice">HQ / Recruiter / Market Office Employee Signature</option>
-        </select>
-
-        <label for="nameInput">Full name</label>
-        <input type="text" id="nameInput" placeholder="Your Name" />
-
-        <label for="titleInput">Title</label>
-        <input type="text" id="titleInput" placeholder="Team Lead Product Management" />
-
-        <label for="workPhoneInput">Work phone</label>
-        <input type="text" id="workPhoneInput" placeholder="000-000-0000" />
-
-        <label for="cellPhoneInput">Cell phone</label>
-        <input type="text" id="cellPhoneInput" placeholder="000-000-0000" />
-
-        <div class="actions">
-          <button id="refreshBtn" type="button">Refresh preview</button>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="panel">
-        <h2>Live preview</h2>
-        <iframe id="previewFrame" title="Signature preview"></iframe>
-
-        <div class="actions">
-          <button id="copyBtn" class="primary" type="button">Copy signature</button>
-        </div>
-
-        <div id="statusMsg"></div>
-
-        <p class="hint">
-          "Copy signature" copies the formatted signature to your clipboard. Paste it directly
-          into Outlook's signature editor (File &rarr; Options &rarr; Mail &rarr; Signatures) or your
-          email client's signature settings.
-        </p>
+<div class="wrap">
+  <div>
+    <h1>Cellular Sales Signature Generator</h1>
+    <p class="subtitle">Fill in your details, preview the result, then copy it into your email client's signature settings.</p>
+    <div class="panel">
+      <h2>Your details</h2>
+      <label for="templateSelect">Template</label>
+      <select id="templateSelect">
+        <option value="salesRep">Sales Rep Signature</option>
+        <option value="recruiter">Recruiter Signature</option>
+        <option value="hqMarketOffice">HQ / Recruiter / Market Office Employee Signature</option>
+      </select>
+      <label for="nameInput">Full name</label>
+      <input type="text" id="nameInput" placeholder="Your Name" />
+      <label for="titleInput">Title</label>
+      <input type="text" id="titleInput" placeholder="Team Lead Product Management" />
+      <label for="workPhoneInput">Work phone</label>
+      <input type="text" id="workPhoneInput" placeholder="000-000-0000" />
+      <label for="cellPhoneInput">Cell phone</label>
+      <input type="text" id="cellPhoneInput" placeholder="000-000-0000" />
+      <div class="actions">
+        <button id="refreshBtn" type="button">Refresh preview</button>
       </div>
     </div>
   </div>
-
-  <script src="generator.js"></script>
+  <div>
+    <div class="panel">
+      <h2>Live preview</h2>
+      <iframe id="previewFrame" title="Signature preview"></iframe>
+      <div class="actions">
+        <button id="copyBtn" class="primary" type="button">Copy signature</button>
+      </div>
+      <div id="statusMsg"></div>
+      <p class="hint">
+        "Copy signature" copies the formatted signature to your clipboard. Paste it directly
+        into Outlook's signature editor (File &rarr; Options &rarr; Mail &rarr; Signatures) or your
+        email client's signature settings.
+      </p>
+    </div>
+  </div>
+</div>
+<script src="generator.js"></script>
 </body>
 </html>
