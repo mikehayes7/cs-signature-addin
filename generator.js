@@ -40,7 +40,7 @@ function baseSignature({ showCareersLink = false, showAwardBanner = false } = {}
   <tr><td>${websiteLine}</td></tr>
   <tr><td><a href="https://cellularsales.com/careers" style="color:#c00; text-decoration:underline;">Work with us</a></td></tr>
   <tr><td>&nbsp;</td></tr>
-  <tr><td style="font-weight:bold;">great ${showCareersLink ? '<span style="color:#c00;">career</span> ' : ''}experiences start here.</td></tr>
+  <tr><td><img src="${ASSET_BASE}/CS_Tagline_EmailSig_72.png" alt="great experiences start here" height="20" style="display:block;" /></td></tr>
   <tr><td>&nbsp;</td></tr>
   <tr>
     <td>
