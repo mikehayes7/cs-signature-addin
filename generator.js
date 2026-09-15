@@ -132,10 +132,34 @@ function renderSignature(templateKey, fields) {
   return html;
 }
 
+// Simplified, image-free layout for Outlook Mobile's signature editor, which
+// doesn't reliably support images/rich HTML the way desktop Outlook does.
+function renderMobileSignature(templateKey, fields) {
+  const title = HARD_SET_TITLES[templateKey] || fields.title || "";
+  const website = templateKey === "recruiter" ? "cellularsales.com/careers" : "cellularsales.com";
+
+  return `
+<table style="${BASE_STYLE}" cellpadding="0" cellspacing="0" border="0">
+  <tr><td style="font-weight:bold;">${escapeHtml(fields.name || "")}</td></tr>
+  <tr><td>${escapeHtml(title)}</td></tr>
+  <tr><td>&nbsp;</td></tr>
+  <tr><td>9040 Executive Park Dr.</td></tr>
+  <tr><td>Knoxville, TN 37923</td></tr>
+  <tr><td><b>w.</b> ${escapeHtml(fields.workPhone || "")}</td></tr>
+  <tr><td><b>c.</b> ${escapeHtml(fields.cellPhone || "")}</td></tr>
+  <tr><td>${website}</td></tr>
+  <tr><td><a href="https://cellularsales.com/careers" style="color:#c00; text-decoration:underline;">Work with us</a></td></tr>
+</table>`;
+}
+
 function updatePreview() {
   const templateKey = document.getElementById("templateSelect").value;
+  const isMobile = document.getElementById("mobileToggle").checked;
   applyHardSetTitle(templateKey);
-  const html = renderSignature(templateKey, getFields());
+  const fields = getFields();
+  const html = isMobile
+    ? renderMobileSignature(templateKey, fields)
+    : renderSignature(templateKey, fields);
   const frame = document.getElementById("previewFrame");
   // Use srcdoc (an attribute on the iframe element itself) rather than
   // reaching into frame.contentDocument -- contentDocument access can be
@@ -202,6 +226,7 @@ function showManualCopyFallback(html) {
 async function copySignature() {
   const fields = getFields();
   const templateKey = document.getElementById("templateSelect").value;
+  const isMobile = document.getElementById("mobileToggle").checked;
   const effectiveTitle = HARD_SET_TITLES[templateKey] || fields.title;
 
   if (!fields.name || !effectiveTitle) {
@@ -209,7 +234,9 @@ async function copySignature() {
     return;
   }
 
-  const html = renderSignature(templateKey, fields);
+  const html = isMobile
+    ? renderMobileSignature(templateKey, fields)
+    : renderSignature(templateKey, fields);
   const text = htmlToPlainText(html);
 
   // 1) Preferred: rich clipboard write (keeps formatting when pasted into Outlook/Gmail).
@@ -282,12 +309,14 @@ function resetForm() {
   document.getElementById("titleInput").value = "";
   document.getElementById("workPhoneInput").value = "";
   document.getElementById("cellPhoneInput").value = "";
+  document.getElementById("mobileToggle").checked = false;
   showStatus("", false);
   updatePreview();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("templateSelect").addEventListener("change", updatePreview);
+  document.getElementById("mobileToggle").addEventListener("change", updatePreview);
   document.getElementById("refreshBtn").addEventListener("click", resetForm);
   document.getElementById("copyBtn").addEventListener("click", copySignature);
   document.getElementById("titleInput").addEventListener("input", () => {

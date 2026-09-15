@@ -10,11 +10,8 @@
   --border: #d7d5d3;
   --text: #201f1e;
   --muted: #605e5c;
-  /* Was #f5f4f3 (near-white warm grey). Bumped to a visibly stone tone
-     per request to "change background box to stone color". If this reads
-     too dark/light, nudge the hex -- common stone steps: #f5f5f4 (lighter),
-     #e7e5e4 (this one), #d6d3d1 (darker). */
-  --bg: #e7e5e4;
+  /* Brand center "Stone" swatch. */
+  --bg: #F8F3E9;
 }
 * { box-sizing: border-box; }
 body {
@@ -82,6 +79,18 @@ input[type="text"]:disabled {
   gap: 8px;
   flex-wrap: wrap;
 }
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 16px;
+}
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
 button {
   padding: 9px 16px;
   font-size: 13px;
@@ -140,6 +149,10 @@ button:hover { opacity: 0.9; }
       <input type="text" id="workPhoneInput" placeholder="000-000-0000" />
       <label for="cellPhoneInput">Cell phone</label>
       <input type="text" id="cellPhoneInput" placeholder="000-000-0000" />
+      <label class="checkbox-label">
+        <input type="checkbox" id="mobileToggle" />
+        Mobile-friendly version (Outlook Mobile app)
+      </label>
       <div class="actions">
         <button id="refreshBtn" type="button">Refresh preview</button>
       </div>
