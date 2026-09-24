@@ -40,7 +40,7 @@ function baseSignature({ showCareersLink = false, showAwardBanner = false } = {}
   <tr><td>${websiteLine}</td></tr>
   <tr><td><a href="https://cellularsales.com/careers" style="color:#c00; text-decoration:underline;">Work with us</a></td></tr>
   <tr><td>&nbsp;</td></tr>
-  <tr><td style="font-weight:bold;">great ${showCareersLink ? '<span style="color:#c00;">career</span> ' : ''}experiences start here.</td></tr>
+  <tr><td><img src="${ASSET_BASE}/${showCareersLink ? 'SC_CareersTagline_EmailSig.png' : 'CS_Tagline_EmailSig.png'}" alt="great ${showCareersLink ? 'career ' : ''}experiences start here" height="50" style="display:block;" /></td></tr>
   <tr><td>&nbsp;</td></tr>
   <tr>
     <td>
@@ -52,11 +52,11 @@ function baseSignature({ showCareersLink = false, showAwardBanner = false } = {}
   <tr><td>&nbsp;</td></tr>
   <tr>
     <td>
-      <a href="https://instagram.com/cellularsales"><img src="${ASSET_BASE}/icon-instagram.png" width="16" height="16" alt="Instagram" style="margin-right:6px;" /></a>
-      <a href="https://tiktok.com/@cellularsales"><img src="${ASSET_BASE}/icon-tiktok.png" width="16" height="16" alt="TikTok" style="margin-right:6px;" /></a>
-      <a href="https://x.com/cellularsales"><img src="${ASSET_BASE}/icon-x.png" width="16" height="16" alt="X" style="margin-right:6px;" /></a>
-      <a href="https://facebook.com/cellularsales"><img src="${ASSET_BASE}/icon-facebook.png" width="16" height="16" alt="Facebook" style="margin-right:6px;" /></a>
-      <a href="https://linkedin.com/company/cellularsales"><img src="${ASSET_BASE}/icon-linkedin.png" width="16" height="16" alt="LinkedIn" /></a>
+      <a href="https://instagram.com/cellularsales"><img src="${ASSET_BASE}/Instagram_Icon.png" height="16" alt="Instagram" style="margin-right:6px;" /></a>
+      <a href="https://tiktok.com/@cellularsales"><img src="${ASSET_BASE}/TikTok_Icon.png" height="16" alt="TikTok" style="margin-right:6px;" /></a>
+      <a href="https://x.com/cellularsales"><img src="${ASSET_BASE}/X_Icon.png" height="16" alt="X" style="margin-right:6px;" /></a>
+      <a href="https://facebook.com/cellularsales"><img src="${ASSET_BASE}/Facebook_Icon.png" height="16" alt="Facebook" style="margin-right:6px;" /></a>
+      <a href="https://linkedin.com/company/cellularsales"><img src="${ASSET_BASE}/LinkedIn_Icon.png" height="16" alt="LinkedIn" /></a>
     </td>
   </tr>
   ${showAwardBanner ? `
